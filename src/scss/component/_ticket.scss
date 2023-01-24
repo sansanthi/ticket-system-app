@@ -1,0 +1,49 @@
+@use '../abstracts/variables' as var;
+
+.ticket {
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    padding: 1.25rem 1rem;
+    border-bottom: var.$border;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+        background: var.$color-light-1;
+    }
+
+    &-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    &-status {
+        font-size: 2rem;
+        fill: var.$color-gray-1;
+        text-align: center;
+    }
+    &-id, &-created {
+        color: var.$color-gray-1;
+        font-weight: 400;
+    }
+    
+    &-title {
+       font-weight: 400;
+    }
+
+    &-created,
+    &-assignee {
+        font-size: 1.2rem;
+    }
+    &-assignee {
+        margin-left: 1rem;
+        text-align: left;
+    }
+}
+
+.ticket-type {
+    display: flex;
+    gap: 2rem;
+}

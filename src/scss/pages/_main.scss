@@ -1,0 +1,17 @@
+@use '../abstracts/variables' as var;
+
+.main-page {
+    width: 95vw;
+    margin: 0 auto;
+    max-width: 1170px;
+    position: relative;
+}
+.section-issues {
+    background: #fff;
+    border: .5px solid var.$color-light-1;
+}
+
+.new-ticket {
+    font-size: 1.4rem;
+}
+
