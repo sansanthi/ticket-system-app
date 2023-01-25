@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/ticket-system-app/static/css/main.9c16f746.css",
-    "main.js": "/ticket-system-app/static/js/main.659c3275.js",
+    "main.css": "/ticket-system-app/static/css/main.a126a058.css",
+    "main.js": "/ticket-system-app/static/js/main.0eca2c80.js",
     "index.html": "/ticket-system-app/index.html",
-    "main.9c16f746.css.map": "/ticket-system-app/static/css/main.9c16f746.css.map",
-    "main.659c3275.js.map": "/ticket-system-app/static/js/main.659c3275.js.map"
+    "main.a126a058.css.map": "/ticket-system-app/static/css/main.a126a058.css.map",
+    "main.0eca2c80.js.map": "/ticket-system-app/static/js/main.0eca2c80.js.map"
   },
   "entrypoints": [
-    "static/css/main.9c16f746.css",
-    "static/js/main.659c3275.js"
+    "static/css/main.a126a058.css",
+    "static/js/main.0eca2c80.js"
   ]
 }
