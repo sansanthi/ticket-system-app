@@ -28,6 +28,10 @@
         color: var.$color-gray-1;
         font-weight: 400;
     }
+
+    &-id {
+        min-width: 3.25rem;
+    }
     
     &-title {
        font-weight: 400;
@@ -39,10 +43,17 @@
     }
     &-assignee {
         margin-left: 1rem;
-        text-align: left;
+        min-width: 3rem;
     }
 }
+.new-ticket {
+    font-size: 1.4rem;
+    display: none;
 
+    @media screen and (min-width: 678px) {
+        display: block;
+    }
+}
 .ticket-type {
     display: flex;
     gap: 2rem;

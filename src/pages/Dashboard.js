@@ -95,7 +95,7 @@ const Dashboard = () => {
         </header>
 
         {loading ? (
-          <div>Loading...</div>
+          <div><h1>Loading....</h1></div>
         ) : (
           <article className="ticket-table">
             {filteredTickets.map((ticket) => {

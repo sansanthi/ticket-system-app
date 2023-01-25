@@ -1,7 +1,18 @@
 # Getting Started with Create React App
 
 Live URL link - https://sansanthi.github.io/ticketing-system
+Github Link - https://github.com/sansanthi/ticket-system-app
 
+To Login
+email - san@mail.com
+password - password
+
+email - client@mail.com
+password - passwordclient
+
+Design reference - https://linear.app/
+
+Data management - firebase
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
