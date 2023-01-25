@@ -1,7 +1,7 @@
 {
   "name": "ticket-system-app",
   "version": "0.1.0",
-  "homepage": "https://sansanthi.github.io/ticket-system-app/",
+  "homepage": "https://sansanthi.github.io/ticket-system-app/#",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
