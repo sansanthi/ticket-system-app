@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-Live URL link - https://sansanthi.github.io/ticketing-system
+Live URL link - https://sansanthi.github.io/ticket-system-app/
 Github Link - https://github.com/sansanthi/ticket-system-app
 
 To Login
