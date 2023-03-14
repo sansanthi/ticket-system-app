@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AiOutlineClose, AiOutlineUser } from "react-icons/ai";
+import { BsCircle, BsCircleHalf, BsFillCheckCircleFill } from "react-icons/bs";
 import {
   doc,
   setDoc,
@@ -10,8 +10,29 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useUserContext } from "../context/User.context";
+import { useAuth } from "../context/Auth.context";
+import StatusDropdown from "./StatusDropdown";
+import LabelDropdown from "./LabelDropdown";
+import AssigneeDropdown from "./AssigneeDropdown";
+import CreatedDate from "./CreatedDate";
+
+import moment from "moment";
+import Editor from "./Editor";
+import { $getRoot } from "lexical";
+
+import {
+  $convertFromMarkdownString,
+  $convertToMarkdownString,
+} from "@lexical/markdown";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { PLAYGROUND_TRANSFORMERS } from "../plugins/MarkdownTransformers.ts";
 
 const TicketPopup = ({ ticketToUpdate, closePopup }) => {
+  console.log('ticketpoup worked')
+  const { currentUser } = useAuth();
+  const [lastTicketId, setLastTicketId] = useState(1);
+  const { userList } = useUserContext();
   const [ticketFormData, setTicketFormData] = useState(
     ticketToUpdate
       ? ticketToUpdate
@@ -22,10 +43,10 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
           label: "",
           assignee: "",
           createdDate: "",
+          createdUserId: "",
           description: "",
         }
   );
-  const [lastTicketId, setLastTicketId] = useState(1);
 
   const getTicketCount = async () => {
     const coll = collection(db, "tickets");
@@ -39,11 +60,34 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
     );
   }, []);
 
-  const status = ["To Do", "In Progress", "Done"];
-  const developers = ["San", "Thi", "Jun"];
+  const getCreatedUser = (id) => {
+    return userList.find((user) => user.userId === id);
+  };
+  const [showDate, setShowDate] = useState(false);
+  const getCreatedDate = () => {
+    return moment
+      .utc(ticketToUpdate.createdDate.toDate().toLocaleDateString())
+      .local()
+      .startOf("seconds")
+      .fromNow();
+  };
+
+  
+  const createdUser = useMemo(
+    () => getCreatedUser(ticketToUpdate.createdUserId),
+    [ticketToUpdate]
+  );
+
+  const issueStatus = [
+    { icon: <BsCircle />, status: "To Do" },
+    { icon: <BsCircleHalf />, status: "In Progress" },
+    { icon: <BsFillCheckCircleFill />, status: "Done" },
+  ];
+
   const labels = ["Feature", "Bug", "Error", "UI Fix"];
 
-  const onHandleSubmit = (e) => {
+  const onHandleSaveTicket = (e) => {
+    console.log('onHandleSubmit working:', e.target);
     e.preventDefault();
     let ticketId = "TIS-" + lastTicketId;
     if (ticketToUpdate) {
@@ -53,6 +97,7 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
         {
           ...ticketFormData,
           id: ticketId,
+          createdUserId: currentUser.uid,
           createdDate: serverTimestamp(),
         },
         ticketId
@@ -71,6 +116,25 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
     });
   };
 
+  const onChangeMarkdown = (markdownText) => {
+    console.log('markdown text:', markdownText)
+    setTicketFormData(prevData => {
+      return {
+        ...prevData,
+        description: markdownText,
+      }
+    })
+  }
+
+  const onChangeDropdownValue = (label, option) => {
+    setTicketFormData((prevData) => {
+      return {
+        ...prevData,
+        [label]: option,
+      };
+    });
+  };
+
   const saveTicket = (data, id) => {
     setDoc(doc(db, "tickets", id), data);
   };
@@ -79,18 +143,20 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
     const updateRef = doc(db, "tickets", id);
     updateDoc(updateRef, data);
   };
-
+console.log('description in ticketpopup:', ticketFormData.description)
   return (
     <article className="ticket-popup">
       <header className="popup-header">
         <div className="issue-id">
-          <span className="issue-id--name">TIS</span> - <span>{ticketFormData.id? ticketFormData.id : "New issue"}</span>
+          {ticketFormData.id ? " ":<span className="issue-id--name">TIS</span> }
+          
+          <span>{ticketFormData.id ? ticketFormData.id : " - New issue"}</span>
         </div>
         <button className="btn-close" onClick={closePopup}>
           <AiOutlineClose />
         </button>
       </header>
-      <form className="ticket-form" onSubmit={onHandleSubmit}>
+      <div className="ticket-form">
         <input
           type="text"
           placeholder="Issue Title"
@@ -99,7 +165,7 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
           value={ticketFormData.title}
           onChange={onChangeInputValue}
         />
-        <textarea
+        {/* <textarea
           name="description"
           id="description"
           cols="30"
@@ -107,54 +173,67 @@ const TicketPopup = ({ ticketToUpdate, closePopup }) => {
           value={ticketFormData.description}
           onChange={onChangeInputValue}
           placeholder="Add description..."
-        ></textarea>
+        ></textarea> */}
+        <Editor descriptionText={ticketFormData.description} onChangeMarkdown={onChangeMarkdown}/>
         <div className="dropdown-box">
-          <select
-            name="status"
-            id="status-select"
-            value={ticketFormData.status}
-            onChange={onChangeInputValue}
-          >
-            {/* <option value="">Status</option> */}
-            {status.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          <select
-            name="label"
-            id="label-select"
-            value={ticketFormData.label}
-            onChange={onChangeInputValue}
-          >
-            <option value="">Label</option>
-            {labels.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          <select
-            name="assignee"
-            id="assignee-select"
-            value={ticketFormData.assignee}
-            onChange={onChangeInputValue}
-          >
-            <option value="">Assignee</option>
-            {developers.map((item, index) => (
-              <option key={index} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+          {/* <Dropdown options={labels} selectedOption={ticketFormData.label} label="label" onChange={onChangeDropdownValue}/>
+          <Dropdown options={issueStatus} selectedOption={ticketFormData.status} label="status" onChange={onChangeDropdownValue}/>
+          <Dropdown options={userList} selectedOption={ticketFormData.assignee} label="assignee" onChange={onChangeDropdownValue}/> */}
+
+          <StatusDropdown
+            options={issueStatus}
+            selectedOption={ticketFormData}
+            label="status"
+            onChange={onChangeDropdownValue}
+          />
+          <LabelDropdown
+            options={labels}
+            selectedOption={ticketFormData.label}
+            label="label"
+            onChange={onChangeDropdownValue}
+          />
+          <AssigneeDropdown
+            options={userList}
+            selectedOption={ticketFormData.assignee}
+            label="assignee"
+            onChange={onChangeDropdownValue}
+          />
         </div>
         <div className="button-box">
-          <button type="submit" className="btn-save">
+          <button type="submit" className="btn-save" onClick={(event) => onHandleSaveTicket(event)}>
             Save
           </button>
         </div>
-      </form>
+      </div>
+      <div className="breakline"></div>
+      <div className="activity">
+        <h2>Activity</h2>
+        <div className="created-user">
+          {createdUser?.profileURL ? (
+            <img
+              src={createdUser.profileURL}
+              className="profile-assignee"
+              alt="profile"
+            />
+          ) : (
+            <AiOutlineUser className="profile-assignee-icon" />
+          )}
+          {ticketToUpdate.createdUserId && (
+            <p>
+              <span>{createdUser.name}</span> created the issue.{" "}
+              <span onClick={() => setShowDate(!showDate)}>
+                {" "}
+                {getCreatedDate()}.
+              </span>{" "}
+              {showDate && (
+                <small className="created-date">
+                  <CreatedDate createdDate={ticketFormData.createdDate} />
+                </small>
+              )}
+            </p>
+          )}
+        </div>
+      </div>
     </article>
   );
 };

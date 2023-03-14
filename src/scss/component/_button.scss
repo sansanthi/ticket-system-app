@@ -22,7 +22,8 @@ button {
 }
 
 .btn-logout,
-.btn-save {
+.btn-save,
+.btn-submit {
     padding: .75rem 1rem;
     border: transparent;
     border-radius: .5rem;
@@ -45,4 +46,22 @@ button {
 .btn-type.active {
     font-weight: 700;
     color: #635FC7;
+}
+
+.profile-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    // padding: .5rem;
+    border: .5px solid rgba($color: #000000, $alpha: .5);
+    cursor: pointer;
+        
+    svg{
+        color: rgba($color: #000000, $alpha: .5);
+        width: 2.4rem;
+        height: 2.4rem;
+    }
 }

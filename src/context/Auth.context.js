@@ -12,11 +12,9 @@ export const useAuth = () => {
 export const AuthProvider = (props) => {
   const [currentUser, setCurrentUser] = useState("");
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log("user in onAuth:", user);
-
       setCurrentUser(user);
       setLoading(false);
     });
